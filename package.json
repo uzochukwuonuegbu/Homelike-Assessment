@@ -1,0 +1,11 @@
+{
+  "name": "homelike-backend-assessment",
+  "version": "1.0.0",
+  "description": "Backend Assessment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Uzochukwu Onuegbu",
+  "license": "ISC"
+}
