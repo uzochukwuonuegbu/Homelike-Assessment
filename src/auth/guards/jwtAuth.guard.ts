@@ -5,25 +5,25 @@ import JWTService from '../../JWTService';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector, private readonly jwtService: JWTService) { }
+	constructor(private readonly reflector: Reflector, private readonly jwtService: JWTService) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const key: string = this.reflector.get<string>('jwtAuth', context.getHandler());
-    if (!key) {
-      return true;
-    }
+	canActivate(context: ExecutionContext): boolean {
+		const key: string = this.reflector.get<string>('jwtAuth', context.getHandler());
+		if (!key) {
+			return true;
+		}
 
-    const request: Request = context.switchToHttp().getRequest();
-    const { authorization } = request.headers;
-    if (!authorization) {
-      throw new UnauthorizedException();
-    }
+		const request: Request = context.switchToHttp().getRequest();
+		const { authorization } = request.headers;
+		if (!authorization) {
+			throw new UnauthorizedException();
+		}
 
-    const payload = this.jwtService.decodeToken(authorization.replace('Bearer ', ''));
-    if (!payload || !payload[key]) {
-      throw new UnauthorizedException();
-    }
+		const payload = this.jwtService.decodeToken(authorization.replace('Bearer ', ''));
+		if (!payload || !payload[key]) {
+			throw new UnauthorizedException();
+		}
 
-    return true;
-  }
+		return true;
+	}
 }

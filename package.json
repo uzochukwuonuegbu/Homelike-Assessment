@@ -4,7 +4,13 @@
   "description": "Backend Assessment",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "sls offline start",
+    "lint": "tslint './**/*.ts'",
+    "build": "tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest --config ./test/jest.config.json --runInBand --detectOpenHandles --forceExit",
+    "test:watch": "jest --config ./test/jest.config.json --watch",
+    "test:cov": "jest --config ./test/jest.config.json --runInBand --detectOpenHandles --coverage --forceExit"
   },
   "author": "Uzochukwu Onuegbu",
   "license": "ISC",

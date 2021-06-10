@@ -13,9 +13,6 @@ export class UserDataService {
 	constructor(private readonly mongoDbClient: MongoDbClient) {}
 	async getUsers() {
 		const Items = await this.mongoDbClient.queryItems(authTable, {});
-		// if (!Items.length) {
-		// 	return [];
-		// }
 		return Items;
 	}
 
@@ -48,16 +45,6 @@ export class UserDataService {
 
 	async deleteUser(user: UserDto) {
 		return await this.mongoDbClient.deleteItem(authTable, { _id: user.id });
-	}
-
-	parseRoles(roles = {}, prefix = '') {
-		const parsed = Object.keys(roles).map((role) => {
-			if (typeof roles[role] === 'object') {
-				return this.parseRoles(roles[role], `${prefix ? `${prefix}:` : ''}${role}`);
-			}
-			return roles[role] ? `${prefix ? `${prefix}:` : ''}${role}` : null;
-		});
-		return [].concat(...parsed).filter((role) => role);
 	}
 
 	formatUser(item: User): User {

@@ -1,0 +1,26 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": "../src",
+  "testRegex": ".spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
+  "testTimeout": 20000,
+  "coveragePathIgnorePatterns": [
+    "<rootDir>/apaleo/generated",
+    "__mocks__",
+    ".mock.ts",
+    ".module.ts",
+    ".dto.ts",
+    "LoggingService.ts"
+  ],
+  "setupFilesAfterEnv": [
+    "<rootDir>/../test/jest.setup.js"
+  ]
+}

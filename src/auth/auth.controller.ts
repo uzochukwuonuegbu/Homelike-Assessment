@@ -2,7 +2,6 @@ import { Controller, Get, Post, UseGuards, Body, Request } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto } from './dto';
-// import { AuthRoles } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +13,6 @@ export class AuthController {
   }
 
   @Post('register')
-  // @AuthRoles()
   register(@Body() registerData: RegisterDto) {
     return this.authService.register(registerData);
   }
