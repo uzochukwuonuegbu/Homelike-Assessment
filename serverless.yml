@@ -1,0 +1,95 @@
+service: homelike-backend-assessment
+custom:
+  accountId: ${ file(serverless.env.yml):${self:custom.stage}.ACCOUNT_ID }
+  stage: ${opt:stage, self:provider.stage}
+  tableThroughputs:
+    prod: 30
+    staging: 5
+    dev: 1
+  webpack:
+    includeModules:
+      forceExclude:
+        - aws-sdk
+  AuthTableName: Auth-${self:provider.stage}
+  ApartmentTableName: Apartments-${self:provider.stage}
+  dynamodb:
+    start:
+      port: 8000
+      dbPath: './.dynamodb'
+      migrate: true
+      seed: true
+    stages:
+      - ${self:provider.stage}
+  pseudoParameters:
+    skipRegionReplace: false
+  prune:
+    automatic: true
+    number: 5
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-central-1
+  # profile: dev
+  environment: ${file(serverless.env.yml):${self:custom.stage}, file(serverless.env.yml):default}
+  apiKeys:
+    - WEB_API_KEY_${self:custom.stage}
+  ManagedPolicyArns:
+    - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - "s3:*"
+        - "lambda:InvokeFunction"
+        - iot:*
+        - sqs:*
+      Resource: "*"
+
+functions:
+  onAuthAction:
+    handler: src/lambda.handler
+    warmup:
+      enabled:
+        - dev
+        - prod
+      concurrency: 15
+    events:
+      - http:
+          path: auth/{any+}
+          method: any
+          cors: true
+  onApartmentAction:
+    handler: src/lambda.handler
+    warmup:
+      enabled:
+        - dev
+        - prod
+      concurrency: 15
+    events:
+      - http:
+          path: apartments/{any+}
+          method: any
+          cors: true
+Outputs:
+  Region:
+    Value:
+      Ref: "AWS::Region"
+
+resources:
+  - ${file(resources/authTable.yml)}
+
+plugins:
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-pseudo-parameters
+  - serverless-cognito-add-custom-attributes
+  - serverless-prune-plugin

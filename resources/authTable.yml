@@ -1,0 +1,40 @@
+
+# JUST: Proof of concept(Not in use because I used MongoDB)
+
+Resources:
+  AuthTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.AuthTableName}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: sKey
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: GSI1pKey
+          AttributeType: S
+        - AttributeName: GSI1sKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: sKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: emailUser
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1pKey
+              KeyType: HASH
+            - AttributeName: GSI1sKey
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
