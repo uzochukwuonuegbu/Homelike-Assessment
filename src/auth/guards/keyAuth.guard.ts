@@ -2,6 +2,7 @@ import { CanActivate, Injectable, ExecutionContext, UnauthorizedException } from
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
+// Proof of Concept!
 @Injectable()
 export class KeyAuthGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) { }

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MongoDbClient } from '../database';
 import { generalConfig } from '../config';
-import { ApartmentSearchConfig, ApartmentConfig, GEOJsonType } from './types';
-const apartmentTableName = generalConfig.aws.apartmentDynamoTableName;
+import { ApartmentSearchConfig, ApartmentConfig, GEOJsonType, StoredApartmentConfig } from './types';
+import logger from '../log.service';
+const apartmentTableName = generalConfig.apartmentTableName;
 
 @Injectable()
 export class ApartmentDataService {
@@ -10,12 +11,24 @@ export class ApartmentDataService {
 
 	async createApartment(data: ApartmentConfig): Promise<any> {
 		await this.mongoDbClient.addItem(apartmentTableName, data);
+		logger.infoLog('Created apartment with following data: ', { data });
 	}
 
-	async getApartments(filter: ApartmentSearchConfig): Promise<ApartmentConfig[]> {
+	async getApartment(id: string): Promise<StoredApartmentConfig> {
+		const Items = await this.mongoDbClient.getItem(apartmentTableName, { id });
+		return Items as StoredApartmentConfig;
+	}
+
+	async getApartments(filter: ApartmentSearchConfig): Promise<StoredApartmentConfig[]> {
 		const query = this.buildSearchQuery(filter);
 		const Items = await this.mongoDbClient.queryItems(apartmentTableName, query);
-		return Items as ApartmentConfig[];
+		return Items as StoredApartmentConfig[];
+	}
+
+	async getFavouriteApartments(ids: string[]): Promise<StoredApartmentConfig[]> {
+		const uniqueIds = ids.filter((v, i, a) => a.indexOf(v) === i);
+		const Items = await this.mongoDbClient.batchGetItems(apartmentTableName, uniqueIds);
+		return Items as StoredApartmentConfig[];
 	}
 
 	private buildSearchQuery(filter: ApartmentSearchConfig): ApartmentSearchConfig {
@@ -33,10 +46,10 @@ export class ApartmentDataService {
 						coordinates,
 					},
 				},
-      };
-      delete query.long
-      delete query.lat
-      delete query.nearestTo
+			};
+			delete query.long;
+			delete query.lat;
+			delete query.nearestTo;
 		}
 		return query;
 	}

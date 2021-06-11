@@ -1,11 +1,12 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Query, UseGuards, Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApartmentService } from './apartment.service';
 import ApartmentDto from './dto/Apartment.dto';
+import JWTService from '../JWTService';
 
 @Controller('apartments')
 export default class ApartmentController {
-	constructor(private readonly apartmentService: ApartmentService) {}
+	constructor(private readonly apartmentService: ApartmentService, private readonly jwtService: JWTService) {}
 
 	@Post('/add')
 	@UseGuards(AuthGuard('jwt'))
@@ -16,5 +17,32 @@ export default class ApartmentController {
 	@Get('/search')
 	async search(@Query() query: any) {
 		return this.apartmentService.processApartmentSearch(query);
+	}
+
+	@Get('/favourites')
+	@UseGuards(AuthGuard('jwt'))
+	async favourites(@Headers() headers: any) {
+		const { authorization } = headers;
+		const payload = this.jwtService.verifyToken(authorization.replace('Bearer ', ''));
+		if (!payload) {
+			return [];
+		}
+		const { id: userId } = payload;
+		try {
+			return this.apartmentService.processFavouriteApartments(userId);
+		} catch (error) {}
+	}
+
+	@Get('/:id/favourites')
+	@UseGuards(AuthGuard('jwt'))
+	async addFavourites(@Headers() headers: any, @Param() param: any) {
+		const { id } = param;
+		const { authorization } = headers;
+		const payload = this.jwtService.verifyToken(authorization.replace('Bearer ', ''));
+		if (!payload && !payload.id) {
+			return [];
+		}
+		const { id: userId } = payload;
+		return this.apartmentService.addFavouriteApartments(userId, id);
 	}
 }

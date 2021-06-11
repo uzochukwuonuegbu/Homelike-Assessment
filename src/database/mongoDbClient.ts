@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 // Import the MongoDB driver
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 const MONGODB_URI = 'mongodb+srv://joe:IpgeTcFRn1UlHzZi@cluster0-0y0ib.mongodb.net/test?retryWrites=true&w=majority';
 let cachedDb = null;
 
@@ -26,32 +26,43 @@ export class MongoDbClient {
 		return db;
 	}
 
-	async getItem<T>(table: string, filter?: {}): Promise<T | undefined> {
+	async getItem<T>(table: string, filter?: any): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
-		const response = await db.collection(table).findOne(filter);
-		return response;
+		const query = this.formatQueryId(filter);
+		const response = await db.collection(table).findOne(query);
+		return this.formatResponse([response]);
 	}
 
 	async queryItems<T>(table: string, filter?: {}): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
+		const query = this.formatQueryId(filter);
 		await db.collection(table).createIndex({ location: '2dsphere' });
 		const response = await db
 			.collection(table)
-			.find(filter)
+			.find(query)
 			.toArray();
-		return response;
+		return this.formatResponse(response);
 	}
 
 	async addItem<T>(table: string, data: {}): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
 		const response = await db.collection(table).insertOne(data);
-		return response;
+		return this.formatResponse([response]);
 	}
 
-	async batchAddItem<T>(table: string, data: []): Promise<T | undefined> {
+	async batchAddItems<T>(table: string, data: []): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
 		const response = await db.collection(table).insertMany(data);
-		return response;
+		return this.formatResponse(response);
+	}
+
+	async batchGetItems<T>(table: string, ids: string[]): Promise<T | undefined> {
+		const db = await this.connectToDatabase();
+		const response = await db
+			.collection(table)
+			.find({ _id: { $in: ids.map((id) => ObjectID(id)) } })
+			.toArray();
+		return this.formatResponse(response);
 	}
 
 	async updateItem<T>(table: string, query: {}, values: Partial<T>): Promise<void> {
@@ -64,5 +75,22 @@ export class MongoDbClient {
 		const db = await this.connectToDatabase();
 		const response = await db.collection(table).deleteOne(query);
 		return response;
+	}
+
+	private formatQueryId<T>(filter: any) {
+		const query = filter;
+		if (query && query.id) {
+			query._id = ObjectID(query.id);
+			delete query.id;
+		}
+		return query;
+	}
+
+	private formatResponse<T>(data: any) {
+		return data.map((x) => {
+			x.id = x._id;
+			delete x._id;
+			return x;
+		});
 	}
 }

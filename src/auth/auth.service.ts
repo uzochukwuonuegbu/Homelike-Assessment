@@ -37,7 +37,6 @@ export class AuthService {
 			id: v4(),
 			password: await hashPassword(data.password),
 		};
-		console.log({ user });
 		await this.userDataService.saveUser(user);
 		return this.stripUser(user);
 	}

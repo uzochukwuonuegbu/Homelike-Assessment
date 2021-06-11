@@ -6,6 +6,11 @@ export interface ApartmentConfig {
 	location: ApartmentLocation;
 }
 
+export interface StoredApartmentConfig extends ApartmentConfig {
+	id: string;
+	favourite?: boolean;
+}
+
 interface ApartmentLocation {
 	type: string;
 	coordinates: number[];

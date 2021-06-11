@@ -6,7 +6,7 @@ import { User } from '../types';
 import { UserDto } from './dto';
 import { generalConfig } from '../../config';
 
-const authTable = generalConfig.aws.authDynamoTableName;
+const authTable = generalConfig.authTableName;
 
 @Injectable()
 export class UserDataService {

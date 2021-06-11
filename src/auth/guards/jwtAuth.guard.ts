@@ -3,12 +3,13 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import JWTService from '../../JWTService';
 
+// Proof of concept!
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
 	constructor(private readonly reflector: Reflector, private readonly jwtService: JWTService) {}
 
 	canActivate(context: ExecutionContext): boolean {
-		const key: string = this.reflector.get<string>('jwtAuth', context.getHandler());
+    const key: string = this.reflector.get<string>('jwtAuth', context.getHandler());
 		if (!key) {
 			return true;
 		}
