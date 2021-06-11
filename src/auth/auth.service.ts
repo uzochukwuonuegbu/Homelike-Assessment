@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcrypt';
+import { compare } from 'bcryptjs';
 import { v4 } from 'uuid';
 import { InvalidCredentialsException, UserAlreadyExistsException, UserNotFoundException } from './auth.exceptions';
 import { LoginDto, RegisterDto } from './dto';

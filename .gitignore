@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 yarn.lock
 yarn-error.log
 .env
@@ -13,8 +13,6 @@ todo
 .idea
 .s3
 .webpack
-src/scripts/hoursExport.ts
-src/scripts/checkoutButtonsExport.ts
 coverage
 report.*.json
 migrations/*
