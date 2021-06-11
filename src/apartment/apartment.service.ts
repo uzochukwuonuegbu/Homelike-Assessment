@@ -11,10 +11,9 @@ export class ApartmentService {
 		private readonly favouriteService: FavouriteService
 	) {}
 
-	public async processCreateApartment(data: ApartmentConfig): Promise<ApartmentConfig> {
+	public async processCreateApartment(data: ApartmentConfig): Promise<void> {
 		logger.infoLog('Started processing apartment creation', { data });
-		const apartments = await this.apartmentDataService.createApartment(data);
-		return apartments;
+		await this.apartmentDataService.createApartment(data);
 	}
 
 	public async processApartmentSearch(filter: any): Promise<ApartmentConfig[]> {

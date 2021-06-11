@@ -33,7 +33,7 @@ class LoggingService {
     if (generalConfig.isOffline) {
       return;
     }
-    const { serviceName, lambdaRequestId } = this.config;
+    // const { serviceName, lambdaRequestId } = this.config;
     
     // Ideally would use the logger service(e.g Logz) here instead of console.log()
     console.log({
@@ -42,8 +42,8 @@ class LoggingService {
       level: lvl,
       data: {
         ...data,
-        serviceName,
-        lambdaRequestId,
+        serviceName: 'xxx',
+        lambdaRequestId: 'xxx',
       },
     });
   }

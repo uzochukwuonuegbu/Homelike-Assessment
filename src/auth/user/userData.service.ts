@@ -22,7 +22,6 @@ export class UserDataService {
 	}
 
 	async getUserByEmail(email: string): Promise<User> {
-		console.log({ authTable });
 		const result = await this.mongoDbClient.getItem(authTable, { email });
 		return result as User;
 	}

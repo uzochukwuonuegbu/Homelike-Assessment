@@ -11,6 +11,7 @@ export default class ApartmentController {
 	@Post('/add')
 	@UseGuards(AuthGuard('jwt'))
 	async create(@Body() payload: ApartmentDto) {
+    console.log('RUNNING THIS!')
 		return this.apartmentService.processCreateApartment(payload);
 	}
 
@@ -33,12 +34,15 @@ export default class ApartmentController {
 		} catch (error) {}
 	}
 
-	@Get('/:id/favourites')
+	@Post('/:id/favourites')
 	@UseGuards(AuthGuard('jwt'))
 	async addFavourites(@Headers() headers: any, @Param() param: any) {
+    console.log('HERE!!')
 		const { id } = param;
 		const { authorization } = headers;
+		console.log({ id, authorization });
 		const payload = this.jwtService.verifyToken(authorization.replace('Bearer ', ''));
+		console.log({ payload });
 		if (!payload && !payload.id) {
 			return [];
 		}

@@ -9,13 +9,13 @@ const apartmentTableName = generalConfig.apartmentTableName;
 export class ApartmentDataService {
 	constructor(private readonly mongoDbClient: MongoDbClient) {}
 
-	async createApartment(data: ApartmentConfig): Promise<any> {
+	async createApartment(data: ApartmentConfig): Promise<void> {
 		await this.mongoDbClient.addItem(apartmentTableName, data);
 		logger.infoLog('Created apartment with following data: ', { data });
 	}
 
 	async getApartment(id: string): Promise<StoredApartmentConfig> {
-		const Items = await this.mongoDbClient.getItem(apartmentTableName, { id });
+    const Items = await this.mongoDbClient.getItem(apartmentTableName, { id });
 		return Items as StoredApartmentConfig;
 	}
 

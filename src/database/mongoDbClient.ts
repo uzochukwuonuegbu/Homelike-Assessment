@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 // Import the MongoDB driver
 import { MongoClient, ObjectID } from 'mongodb';
-const MONGODB_URI = 'mongodb+srv://joe:IpgeTcFRn1UlHzZi@cluster0-0y0ib.mongodb.net/test?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI;
 let cachedDb = null;
 
 @Injectable()
@@ -28,10 +28,10 @@ export class MongoDbClient {
 
 	async getItem<T>(table: string, filter?: any): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
-		const query = this.formatQueryId(filter);
-		const response = await db.collection(table).findOne(query);
+		// const query = this.formatQueryId(filter);
+		const response = await db.collection(table).findOne(filter);
 		if (!response) return undefined;
-		return this.formatResponse([response]);
+		return this.formatSingleItemResponse(response);
 	}
 
 	async queryItems<T>(table: string, filter?: {}): Promise<T | undefined> {
@@ -42,19 +42,19 @@ export class MongoDbClient {
 			.collection(table)
 			.find(query)
 			.toArray();
-		return this.formatResponse(response);
+		return this.formatMultipleItemsResponse(response);
 	}
 
 	async addItem<T>(table: string, data: {}): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
 		const response = await db.collection(table).insertOne(data);
-		return this.formatResponse([response]);
+		return this.formatSingleItemResponse(response);
 	}
 
 	async batchAddItems<T>(table: string, data: []): Promise<T | undefined> {
 		const db = await this.connectToDatabase();
 		const response = await db.collection(table).insertMany(data);
-		return this.formatResponse(response);
+		return this.formatMultipleItemsResponse(response);
 	}
 
 	async batchGetItems<T>(table: string, ids: string[]): Promise<T | undefined> {
@@ -63,7 +63,7 @@ export class MongoDbClient {
 			.collection(table)
 			.find({ _id: { $in: ids.map((id) => ObjectID(id)) } })
 			.toArray();
-		return this.formatResponse(response);
+		return this.formatMultipleItemsResponse(response);
 	}
 
 	async updateItem<T>(table: string, query: {}, values: Partial<T>): Promise<void> {
@@ -87,7 +87,7 @@ export class MongoDbClient {
 		return query;
 	}
 
-	private formatResponse<T>(data: any) {
+	private formatMultipleItemsResponse<T>(data: any) {
 		return data.map((x) => {
 			if (x._id) {
 				x.id = x._id;
@@ -95,5 +95,13 @@ export class MongoDbClient {
 			}
 			return x;
 		});
+	}
+	private formatSingleItemResponse<T>(data: any) {
+		const newData = data;
+		if (newData._id) {
+			newData.id = newData._id;
+			delete newData._id;
+		}
+		return newData;
 	}
 }

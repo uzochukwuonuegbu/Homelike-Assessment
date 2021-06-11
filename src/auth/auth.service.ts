@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcryptjs';
+import { compareSync } from 'bcryptjs';
 import { v4 } from 'uuid';
 import { InvalidCredentialsException, UserAlreadyExistsException, UserNotFoundException } from './auth.exceptions';
 import { LoginDto, RegisterDto } from './dto';
@@ -17,7 +17,7 @@ export class AuthService {
 			throw new UserNotFoundException();
 		}
 
-		const validPassword = await compare(data.password, user.password);
+		const validPassword = compareSync(data.password, user.password);
 		if (validPassword) {
 			return {
 				token: this.createToken(user),
