@@ -37,6 +37,9 @@ npm run test
 
 ### Endpoints(Sample CURLs)
 
+NOTE:
+```bash
+For endpoints requiring a Bearer token, please use the LOGIN endpoint to get a fresh token as the tokens in the sample curls might be expired at the time of tests.
 
 POST Register:
 ```bash
