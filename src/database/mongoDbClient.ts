@@ -30,6 +30,7 @@ export class MongoDbClient {
 		const db = await this.connectToDatabase();
 		const query = this.formatQueryId(filter);
 		const response = await db.collection(table).findOne(query);
+		if (!response) return undefined;
 		return this.formatResponse([response]);
 	}
 
@@ -88,8 +89,10 @@ export class MongoDbClient {
 
 	private formatResponse<T>(data: any) {
 		return data.map((x) => {
-			x.id = x._id;
-			delete x._id;
+			if (x._id) {
+				x.id = x._id;
+				delete x._id;
+			}
 			return x;
 		});
 	}

@@ -17,7 +17,7 @@ export class UserDataService {
 	}
 
 	async getUserById(id: string): Promise<User> {
-		const result = await this.mongoDbClient.getItem(authTable, { _id: id });
+		const result = await this.mongoDbClient.getItem(authTable, { id });
 		return result as User;
 	}
 

@@ -66,6 +66,7 @@ functions:
           path: auth/{any+}
           method: any
           cors: true
+          private: true
   onApartmentAction:
     handler: src/lambda.handler
     warmup:
@@ -78,6 +79,7 @@ functions:
           path: apartments/{any+}
           method: any
           cors: true
+          private: true
 Outputs:
   Region:
     Value:
